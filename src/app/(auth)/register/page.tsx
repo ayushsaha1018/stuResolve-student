@@ -76,6 +76,7 @@ export default function Login() {
       image: imageUrl,
       gradYear: data.year,
       password: data.password,
+      confirmPass: data.cnfPassword,
     };
 
     try {
