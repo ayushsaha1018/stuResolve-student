@@ -4,49 +4,94 @@ import { EyeFilledIcon } from "@/icons/EyeFilledIcon";
 import { EyeSlashFilledIcon } from "@/icons/EyeSlashFilledIcon";
 import { Input, Select, SelectItem } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Card } from "@nextui-org/react";
 import Link from "next/link";
-import { branches, graduatingYear } from "@/app/lib/data";
+import { branches, graduatingYear } from "@/lib/data";
 
 import { Avatar } from "@nextui-org/react";
 import { Pencil } from "lucide-react";
-import { uploadFiles } from "@/utils/uploadThing";
 import { useForm, Controller } from "react-hook-form";
-
-// Provide an initial state of type 'File | undefined'
-const initialProfileImg: File | undefined = undefined;
+import { useEdgeStore } from "@/lib/edgestore";
+import toast, { Toaster } from "react-hot-toast";
+import axios from "axios";
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
   const uploadInput = useRef<HTMLInputElement>(null);
-  const [profileImg, setProfileImg] = useState(initialProfileImg);
+  const [profileImg, setProfileImg] = useState<File>();
+  const { edgestore } = useEdgeStore();
+  const [loading, setLoading] = useState(false);
 
   const toggleVisibility = () => setIsVisible(!isVisible);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files ? e.target.files[0] : null;
-
-    // Handle the case where selectedFile might be null
-    // Check if selectedFile is not null before setting the state
-    if (selectedFile !== null) {
-      setProfileImg(selectedFile);
-    }
-  };
 
   const {
     register,
     handleSubmit,
     control,
     watch,
-    reset,
     formState: { errors },
   } = useForm({
     mode: "all",
   });
 
-  const onSubmit = (data: any) => {
-    console.log(data);
+  const onSubmit = async (data: any) => {
+    let imageUrl = "";
+    setLoading(true);
+    if (data.cnfPassword !== data.password) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    let SignInToast = toast.loading("Signing in...");
+
+    if (profileImg) {
+      toast.dismiss(SignInToast);
+      let toast1 = toast.loading("Uploading Image...");
+      const img = await edgestore.publicFiles.upload({
+        file: profileImg,
+        onProgressChange: (progress) => {
+          // you can use this to show a progress bar
+          console.log(progress);
+        },
+      });
+      // you can run some server action or api here
+      // to add the necessary data to your database
+      toast.dismiss(toast1);
+      toast.loading("Signing in...");
+      console.log(img);
+      imageUrl = img?.url;
+    }
+    console.log({
+      name: data.name,
+      branch: data.branch,
+      email: data.email,
+      image: imageUrl,
+      gradYear: data.year,
+      password: data.password,
+    });
+    let payload = {
+      name: data.name,
+      branch: data.branch,
+      email: data.email,
+      image: imageUrl,
+      gradYear: data.year,
+      password: data.password,
+    };
+
+    try {
+      const res = await axios.post(
+        "https://sturesolve-api.onrender.com/register",
+        payload
+      );
+      toast.dismiss();
+      console.log(res);
+      toast.success("Registered");
+    } catch (error) {
+      toast.dismiss();
+      console.log(error);
+      toast.error("Error");
+    }
+    setLoading(false);
   };
 
   return (
@@ -54,11 +99,11 @@ export default function Login() {
       <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-lg">
           <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-            Sign up to your account
+            Sign up
           </h2>
         </div>
 
-        <Card className="mt-10 sm:mx-auto sm:w-full sm:max-w-[1000px]">
+        <Card className="mt-6 sm:mx-auto sm:w-full sm:max-w-[1000px]">
           <div className="bg-white px-6 py-6 shadow sm:rounded-lg sm:px-12">
             <div className="w-full flex justify-center mb-5">
               <div className="relative w-fit">
@@ -83,7 +128,8 @@ export default function Login() {
                   accept="image/*"
                   type="file"
                   className="hidden"
-                  onChange={handleFileChange}
+                  // @ts-ignore
+                  onChange={(e) => setProfileImg(e.target.files[0])}
                   ref={uploadInput}
                 />
               </div>
@@ -206,7 +252,12 @@ export default function Login() {
               />
 
               <div className="lg:col-span-2">
-                <Button color="primary" className="w-full" type="submit">
+                <Button
+                  color="primary"
+                  className="w-full"
+                  type="submit"
+                  isDisabled={loading}
+                >
                   Sign Up
                 </Button>
               </div>
