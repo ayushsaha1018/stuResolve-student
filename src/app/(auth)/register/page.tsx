@@ -15,6 +15,8 @@ import { useForm, Controller } from "react-hook-form";
 import { useEdgeStore } from "@/lib/edgestore";
 import toast, { Toaster } from "react-hot-toast";
 import axios from "axios";
+import { useUserStore } from "@/store/user";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
@@ -22,8 +24,10 @@ export default function Login() {
   const [profileImg, setProfileImg] = useState<File>();
   const { edgestore } = useEdgeStore();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const { storeUser, storeToken } = useUserStore();
 
   const {
     register,
@@ -86,11 +90,14 @@ export default function Login() {
       );
       toast.dismiss();
       console.log(res);
+      storeUser(res.data.user);
+      storeToken(res.data.token);
       toast.success("Registered");
-    } catch (error) {
+      router.push("/");
+    } catch (error: any) {
       toast.dismiss();
-      console.log(error);
-      toast.error("Error");
+      console.log(error.response.data);
+      toast.error(error?.response?.data?.message);
     }
     setLoading(false);
   };

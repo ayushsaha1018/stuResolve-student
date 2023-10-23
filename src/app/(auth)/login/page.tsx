@@ -10,6 +10,8 @@ import Link from "next/link";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { useUserStore } from "@/store/user";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
@@ -22,6 +24,8 @@ export default function Login() {
   } = useForm({
     mode: "all",
   });
+  const { storeUser, storeToken } = useUserStore();
+  const router = useRouter();
 
   const onSubmit = async (data: any) => {
     setLoading(true);
@@ -43,11 +47,14 @@ export default function Login() {
       );
       toast.dismiss();
       console.log(res);
+      storeUser(res.data.user);
+      storeToken(res.data.token);
       toast.success("Logged in successfully");
-    } catch (error) {
+      router.push("/");
+    } catch (error: any) {
       toast.dismiss();
-      console.log(error);
-      toast.error("Error");
+      console.log(error.response.data);
+      toast.error(error?.response?.data?.message);
     }
     setLoading(false);
   };
