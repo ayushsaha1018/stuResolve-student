@@ -1,11 +1,21 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Roboto, Nunito } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/providers/providers";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import { ToasterProvider } from "@/providers/toast-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+const roboto = Roboto({
+  weight: ["100", "300", "400", "500", "700", "900"],
+  subsets: ["latin"],
+  variable: "--font-roboto",
+});
+
+const nunito = Nunito({
+  weight: ["300", "400", "500", "700", "900"],
+  subsets: ["latin"],
+  variable: "--font-nunito",
+});
 
 export const metadata: Metadata = {
   title: "StuResolve",
@@ -19,7 +29,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>
+      <body className={`${nunito.className}`}>
         <Providers>
           <ToasterProvider />
           <EdgeStoreProvider>{children}</EdgeStoreProvider>

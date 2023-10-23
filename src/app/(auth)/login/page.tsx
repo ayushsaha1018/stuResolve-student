@@ -56,7 +56,7 @@ export default function Login() {
     <section className="h-[100vh] w-[100vw] flex items-center justify-center">
       <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-md">
-          <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          <h2 className="mt-6 text-center capitalize text-3xl font-bold leading-9 tracking-tight text-gray-900 font-roboto">
             Sign in to your account
           </h2>
         </div>
@@ -101,7 +101,7 @@ export default function Login() {
                     id="remember-me"
                     name="remember-me"
                     type="checkbox"
-                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    className="h-4 w-4 rounded border-gray-300 text-primary-500 focus:text-primary-500"
                   />
                   <label
                     htmlFor="remember-me"
@@ -114,7 +114,7 @@ export default function Login() {
                 <div className="text-sm leading-6">
                   <a
                     href="#"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500"
+                    className="font-semibold text-primary-500 hover:text-primary-500"
                   >
                     Forgot password?
                   </a>
@@ -137,7 +137,7 @@ export default function Login() {
               Not a member?{" "}
               <Link
                 href="/register"
-                className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500"
+                className="font-semibold leading-6 text-primary-500 hover:text-primary-500"
               >
                 Register
               </Link>

@@ -99,7 +99,7 @@ export default function Login() {
     <section className="">
       <div className="flex min-h-full flex-1 flex-col justify-center py-12 sm:px-6 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-lg">
-          <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
+          <h2 className="mt-6 text-center capitalize font-roboto text-3xl font-bold leading-9 tracking-tight text-gray-900">
             Sign up
           </h2>
         </div>
@@ -268,7 +268,7 @@ export default function Login() {
               Already a member?{" "}
               <Link
                 href="/login"
-                className="font-semibold leading-6 text-primary hover:text-primary"
+                className="font-semibold leading-6 text-primary-500 hover:text-primary"
               >
                 Sign In
               </Link>
