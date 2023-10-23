@@ -5,13 +5,52 @@ import { EyeSlashFilledIcon } from "@/icons/EyeSlashFilledIcon";
 import { Input } from "@nextui-org/react";
 import { Button } from "@nextui-org/react";
 import { useState } from "react";
-import { Card, CardBody } from "@nextui-org/react";
+import { Card } from "@nextui-org/react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
-
   const toggleVisibility = () => setIsVisible(!isVisible);
+  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    mode: "all",
+  });
+
+  const onSubmit = async (data: any) => {
+    setLoading(true);
+    toast.loading("Logging in...");
+
+    console.log({
+      email: data.email,
+      password: data.password,
+    });
+    let payload = {
+      email: data.email,
+      password: data.password,
+    };
+
+    try {
+      const res = await axios.post(
+        "https://sturesolve-api.onrender.com/login",
+        payload
+      );
+      toast.dismiss();
+      console.log(res);
+      toast.success("Logged in successfully");
+    } catch (error) {
+      toast.dismiss();
+      console.log(error);
+      toast.error("Error");
+    }
+    setLoading(false);
+  };
 
   return (
     <section className="h-[100vh] w-[100vw] flex items-center justify-center">
@@ -24,12 +63,14 @@ export default function Login() {
 
         <Card className="mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
           <div className="bg-white px-6 py-12 shadow-xl sm:rounded-lg sm:px-12">
-            <form className="space-y-6" action="#" method="POST">
+            <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
               <Input
                 type="email"
                 label="Email"
                 labelPlacement="outside"
                 placeholder="Enter your email"
+                isInvalid={errors.email ? true : false}
+                {...register("email", { required: true })}
               />
 
               <Input
@@ -50,6 +91,8 @@ export default function Login() {
                   </button>
                 }
                 type={isVisible ? "text" : "password"}
+                isInvalid={errors.password ? true : false}
+                {...register("password", { required: true })}
               />
 
               <div className="flex items-center justify-between">
@@ -79,7 +122,12 @@ export default function Login() {
               </div>
 
               <div>
-                <Button color="primary" className="w-full">
+                <Button
+                  color="primary"
+                  className="w-full"
+                  type="submit"
+                  isDisabled={loading}
+                >
                   Sign In
                 </Button>
               </div>
