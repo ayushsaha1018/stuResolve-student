@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import axios from "axios";
 import { useUserStore } from "@/store/user";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
@@ -41,14 +42,13 @@ export default function Login() {
     };
 
     try {
-      const res = await axios.post(
-        "https://sturesolve-api.onrender.com/login",
-        payload
-      );
+      const res = await signIn("credentials", {
+        email: data.email,
+        password: data.password,
+        redirect: false,
+      });
       toast.dismiss();
       console.log(res);
-      storeUser(res.data.user);
-      storeToken(res.data.token);
       toast.success("Logged in successfully");
       router.push("/");
     } catch (error: any) {
