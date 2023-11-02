@@ -49,6 +49,11 @@ export default function Login() {
       });
       toast.dismiss();
       console.log(res);
+      if (res?.error) {
+        toast.error("Logging in failed");
+        return;
+        setLoading(false);
+      }
       toast.success("Logged in successfully");
       router.push("/");
     } catch (error: any) {

@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "@/providers/providers";
 import { EdgeStoreProvider } from "@/lib/edgestore";
 import { ToasterProvider } from "@/providers/toast-provider";
+import { AuthProvider } from "@/providers/authProvider";
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],
@@ -30,10 +31,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${nunito.className}`}>
-        <Providers>
-          <ToasterProvider />
-          <EdgeStoreProvider>{children}</EdgeStoreProvider>
-        </Providers>
+        <AuthProvider>
+          <Providers>
+            <ToasterProvider />
+            <EdgeStoreProvider>{children}</EdgeStoreProvider>
+          </Providers>
+        </AuthProvider>
       </body>
     </html>
   );
