@@ -11,7 +11,9 @@ import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { useUserStore } from "@/store/user";
+
 import { useRouter } from "next/navigation";
+import { storeUserServer } from "@/lib/storeUser";
 
 export default function Login() {
   const [isVisible, setIsVisible] = useState(false);
@@ -49,6 +51,7 @@ export default function Login() {
       console.log(res);
       storeUser(res.data.user);
       storeToken(res.data.token);
+      storeUserServer(res.data.token);
       toast.success("Logged in successfully");
       router.push("/");
     } catch (error: any) {
